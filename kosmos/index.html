@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Поиск внеземной жизни</title>
+
+  <style>
+    /* ============================================================
+       1. ПЕРЕМЕННЫЕ И БАЗОВЫЕ НАСТРОЙКИ
+       ============================================================ */
+    :root {
+      --bg-deep:      #06071a;
+      --bg-mid:       #0d1030;
+      --bg-card:      rgba(20, 25, 60, 0.7);
+      --accent:       #6b8cff;
+      --accent-2:     #b06bff;
+      --accent-glow:  #8ab4ff;
+      --text:         #e6ecff;
+      --text-soft:    #a8b3e0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0 0 80px 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text);
+      background: radial-gradient(ellipse at top, #1a1f5c 0%, var(--bg-deep) 60%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       2. ЗВЁЗДНОЕ НЕБО (через CSS, без картинок)
+       ============================================================ */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+        radial-gradient(1px 1px at 120px 80px, #cfe0ff, transparent),
+        radial-gradient(1px 1px at 200px 150px, #fff, transparent),
+        radial-gradient(1px 1px at 300px 60px, #a8b3e0, transparent),
+        radial-gradient(1px 1px at 400px 200px, #fff, transparent),
+        radial-gradient(1px 1px at 500px 100px, #cfe0ff, transparent),
+        radial-gradient(1px 1px at 600px 250px, #fff, transparent),
+        radial-gradient(1px 1px at 700px 40px, #a8b3e0, transparent);
+      background-size: 800px 300px;
+      animation: twinkle 6s infinite alternate;
+      opacity: 0.7;
+    }
+
+    body::after {
+      background-image:
+        radial-gradient(2px 2px at 150px 200px, #8ab4ff, transparent),
+        radial-gradient(2px 2px at 450px 350px, #b06bff, transparent),
+        radial-gradient(2px 2px at 650px 120px, #fff, transparent);
+      background-size: 900px 500px;
+      animation: twinkle 4s infinite alternate-reverse;
+      opacity: 0.9;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.4; }
+      to   { opacity: 1; }
+    }
+
+    /* ============================================================
+       3. КОНТЕЙНЕР
+       ============================================================ */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ============================================================
+       4. ЗАГОЛОВКИ
+       ============================================================ */
+    h1 {
+      font-size: 52px;
+      text-align: center;
+      margin: 70px 0 30px 0;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #8ab4ff, #b06bff, #8ab4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 40px rgba(138, 180, 255, 0.4);
+      animation: glow 4s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 10px rgba(138, 180, 255, 0.3)); }
+      to   { filter: drop-shadow(0 0 25px rgba(176, 107, 255, 0.6)); }
+    }
+
+    h2 {
+      font-size: 26px;
+      color: var(--accent-glow);
+      margin-top: 60px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(107, 140, 255, 0.3);
+      text-shadow: 0 0 12px rgba(107, 140, 255, 0.4);
+    }
+
+    /* ============================================================
+       5. ТЕКСТ
+       ============================================================ */
+    p {
+      font-size: 18px;
+      color: var(--text-soft);
+      margin: 16px 0;
+    }
+
+    /* ============================================================
+       6. СПИСКИ (карточки)
+       ============================================================ */
+    ul {
+      list-style: none;
+      padding-left: 0;
+      font-size: 18px;
+    }
+    ul li {
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid rgba(107, 140, 255, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      color: var(--text);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    ul li:hover {
+      transform: translateX(6px);
+      box-shadow: 0 6px 28px rgba(107, 140, 255, 0.35);
+    }
+
+    /* ============================================================
+       7. КАРТИНКИ
+       ============================================================ */
+    img {
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6),
+                  0 0 40px rgba(107, 140, 255, 0.15);
+      display: block;
+      margin: 24px auto;
+      border: 1px solid rgba(138, 180, 255, 0.25);
+    }
+
+    .big {
+      width: 100%;
+      margin: 35px auto;
+    }
+
+    .planet {
+      width: 90px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6),
+                  0 0 20px rgba(138, 180, 255, 0.3);
+    }
+
+    .row {
+      width: 30%;
+      display: inline-block;
+      margin: 1.5%;
+      vertical-align: top;
+    }
+    .row-wrapper {
+      text-align: center;
+    }
+
+    /* ============================================================
+       8. ВИДЕО И АУДИО
+       ============================================================ */
+    video {
+      display: block;
+      width: 100%;
+      margin: 25px auto;
+      border-radius: 16px;
+      background-color: #000;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7),
+                  0 0 40px rgba(176, 107, 255, 0.25);
+      border: 1px solid rgba(176, 107, 255, 0.3);
+    }
+
+    audio {
+      display: block;
+      width: 100%;
+      margin: 25px auto;
+      border-radius: 30px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
+                  0 0 25px rgba(107, 140, 255, 0.25);
+    }
+
+    /* ============================================================
+       9. БЛОК ФАНТАЗИИ (голографическая панель)
+       ============================================================ */
+    .fantasy-block {
+      position: relative;
+      margin: 70px 0;
+      padding: 40px 30px;
+      border-radius: 24px;
+      background: linear-gradient(135deg,
+                  rgba(43, 26, 95, 0.9) 0%,
+                  rgba(74, 43, 143, 0.85) 50%,
+                  rgba(30, 20, 80, 0.9) 100%);
+      border: 1px solid rgba(176, 107, 255, 0.5);
+      box-shadow: 0 0 60px rgba(176, 107, 255, 0.3),
+                  inset 0 0 60px rgba(107, 140, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .fantasy-block::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, #b06bff, #8ab4ff, transparent);
+      animation: scan 3s linear infinite;
+    }
+
+    @keyframes scan {
+      from { transform: translateX(-100%); }
+      to   { transform: translateX(100%); }
+    }
+
+    .fantasy-block h2 {
+      color: #ffd6f5;
+      border-bottom: 2px solid rgba(176, 107, 255, 0.5);
+      text-shadow: 0 0 15px rgba(255, 214, 245, 0.5);
+      margin-top: 30px;
+    }
+    .fantasy-block h2:first-child {
+      margin-top: 0;
+    }
+    .fantasy-block p {
+      color: #e8ddff;
+    }
+    .fantasy-block em {
+      color: #ffd6f5;
+      font-style: normal;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 214, 245, 0.5);
+    }
+
+    /* ============================================================
+       10. КНОПКА
+       ============================================================ */
+    button {
+      display: block;
+      margin: 70px auto 0 auto;
+      border: none;
+      border-radius: 40px;
+      background: linear-gradient(135deg, #4a5fc1, #b06bff);
+      color: white;
+      font-size: 19px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 18px 45px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(107, 140, 255, 0.5),
+                  0 0 60px rgba(176, 107, 255, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(107, 140, 255, 0.5),
+                             0 0 60px rgba(176, 107, 255, 0.3); }
+      50%      { box-shadow: 0 0 45px rgba(107, 140, 255, 0.8),
+                             0 0 90px rgba(176, 107, 255, 0.5); }
+    }
+
+    button:hover {
+      transform: translateY(-4px) scale(1.05);
+    }
+
+    /* ============================================================
+       11. ПЛАВНОЕ ПОЯВЛЕНИЕ БЛОКОВ
+       ============================================================ */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ============================================================
+       12. КАСТОМНЫЙ СКРОЛЛБАР
+       ============================================================ */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-deep);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #4a5fc1, #b06bff);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #6b8cff, #c98bff);
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- ============================================================
+       БЛОК 1: ГЛАВНЫЙ ЗАГОЛОВОК И ВВЕДЕНИЕ
+       ============================================================ -->
+  <h1 class="fade-in">Поиск внеземной жизни</h1>
+
+  <img class="big fade-in" src="images/img-i.webp" alt="Звёздное небо">
+
+  <p class="fade-in">Эта работа посвящена тому, как учёные ищут жизнь за пределами Земли. Вопрос о том, одиноки ли мы во Вселенной, перешёл из философии в строгую науку.</p>
+
+
+  <!-- ============================================================
+       БЛОК 2: ЗОНА ОБИТАЕМОСТИ
+       ============================================================ -->
+  <h2 class="fade-in">Почему учёные допускают жизнь в космосе?</h2>
+  <p class="fade-in">Поиск основан на двух допущениях: земная жизнь не уникальна, а химические условия для неё распространены в космосе. Учёные ищут планеты в зоне обитаемости — там, где может быть жидкая вода. Жидкая вода считается главным условием жизни.</p>
+
+  <img class="fade-in" src="images/img-i-1.webp" alt="Схема зоны обитаемости">
+
+
+  <!-- ============================================================
+       БЛОК 3: СПИСОК КАНДИДАТОВ
+       ============================================================ -->
+  <h2 class="fade-in">Где искать? Список лучших кандидатов</h2>
+  <p class="fade-in">На основе данных о более чем 6000 экзопланет составили список из 45 самых перспективных. Вот несколько особенно интересных:</p>
+
+  <ul class="fade-in">
+    <li>
+      <img class="planet" src="images/img-i-7.webp" alt="Планета TRAPPIST-1e">
+      TRAPPIST-1e — похожа на Землю по получаемой энергии
+    </li>
+    <li>
+      <img class="planet" src="images/img-i-8.webp" alt="Планета LHS 1140 b">
+      LHS 1140 b — возможно, есть океан и азотная атмосфера
+    </li>
+    <li>
+      <img class="planet" src="images/img-i-9.webp" alt="Планета Proxima Centauri b">
+      Proxima Centauri b — ближайшая к нам, всего 4 световых года
+    </li>
+    <li>
+      <img class="planet" src="images/img-i-10.webp" alt="Планета GJ 1002b">
+      GJ 1002b — самая похожая на Землю по размеру
+    </li>
+  </ul>
+
+
+  <!-- ============================================================
+       БЛОК 4: ПРОБЛЕМА «МОЛЕКУЛА — НЕ ЖИЗНЬ»
+       ============================================================ -->
+  <h2 class="fade-in">Проблема: молекула жизни — ещё не жизнь</h2>
+  <p class="fade-in">Многие «молекулы жизни» образуются и без жизни. Аминокислоты находили в метеоритах. Найти одну молекулу — не значит найти жизнь. Это называют проблемой ложноположительных сигналов.</p>
+
+  <img class="fade-in" src="images/img-i-6.webp" alt="Метеорит с аминокислотами">
+
+
+  <!-- ============================================================
+       БЛОК 5: КАК ОТЛИЧИТЬ ЖИЗНЬ ОТ «НЕ-ЖИЗНИ»
+       ============================================================ -->
+  <h2 class="fade-in">Как отличить жизнь от «не-жизни»?</h2>
+  <p class="fade-in">В 2026 году предложили метод по статистике молекул. Жизнь производит молекулы не случайно, а по порядку. В живом образце аминокислоты более разнообразны и равномерны, чем в неживом. Метод проверили на 100+ образцах — от микробов до скорлупы яиц динозавров.</p>
+
+
+  <!-- ============================================================
+       БЛОК 6: ТРИ ГЛАВНЫХ МЕСТА В СОЛНЕЧНОЙ СИСТЕМЕ
+       ============================================================ -->
+  <h2 class="fade-in">Кого ищут в первую очередь?</h2>
+  <p class="fade-in">Скорее всего, жизнь — это микробы, а не «зелёные человечки». В Солнечной системе есть три главных места:</p>
+
+  <div class="row-wrapper fade-in">
+    <img class="row" src="images/img-i-11.webp" alt="Планета Марс с ровером">
+    <img class="row" src="images/img-i-12.webp" alt="Спутник Европа с трещинами">
+    <img class="row" src="images/img-i-13.webp" alt="Спутник Энцелад с гейзерами">
+  </div>
+
+  <ul class="fade-in">
+    <li>Марс — ровер Perseverance нашёл следы древних реакций</li>
+    <li>Европа — под льдом возможен океан жидкой воды</li>
+    <li>Энцелад — гейзеры выбрасывают воду из подлёдного океана</li>
+  </ul>
+
+
+  <!-- ============================================================
+       БЛОК 7: ЗЕМНЫЕ МИКРОБЫ В КОСМОСЕ
+       ============================================================ -->
+  <h2 class="fade-in">Осторожно: земные микробы могут улететь с аппаратом</h2>
+  <p class="fade-in">Некоторые земные бактерии выживают в марсианских условиях. В эксперименте споры чёрной плесени выжили в стратосфере. Поэтому космические аппараты стерилизуют — чтобы не спутать земную жизнь с инопланетной.</p>
+
+  <img class="fade-in" src="images/img-i-14.webp" alt="Чашка Петри с чёрной плесенью">
+
+
+  <!-- ============================================================
+       БЛОК 8: СИГНАЛ «WOW!»
+       ============================================================ -->
+  <h2 class="fade-in">А странные сигналы — это инопланетяне?</h2>
+  <p class="fade-in">Самый известный — сигнал «Wow!» 1977 года. Он длился 72 секунды. Современные исследования считают, что причина естественная — облака водорода, подсвеченные магнетаром. Сигнал больше не повторялся.</p>
+
+  <img class="fade-in" src="images/img-i-15.webp" alt="Распечатка сигнала Wow!">
+
+
+  <!-- ============================================================
+       БЛОК 9: ВЫВОД
+       ============================================================ -->
+  <h2 class="fade-in">Вывод</h2>
+  <p class="fade-in">Поиск внеземной жизни — это детективная работа. Учёные ищут планеты в зоне обитаемости, проверяют молекулы, изучают подлёдные океаны и проверяют каждый сигнал. Главное — не спешить с выводами.</p>
+
+  <img class="fade-in" src="images/img-i-16.webp" alt="Телескоп, смотрящий в звёздное небо">
+
+
+  <!-- ============================================================
+       БЛОК 10: ФАНТАЗИЯ — картинка, видео, аудио
+       ============================================================ -->
+  <div class="fantasy-block fade-in">
+
+    <h2>Как я представляю встречу с внеземной жизнью</h2>
+    <p>Этот раздел — моя фантазия. Я представил, как может выглядеть контакт с другой цивилизацией. Картинка, видео и звук ниже созданы нейросетью специально для этого проекта.</p>
+
+    <!-- КАРТИНКА ОТ НЕЙРОСЕТИ: картинки фантастика/image (2).jpeg -->
+    <img class="big" src="images/fantastika-image-2.webp" alt="Фантастический пейзаж чужой планеты">
+
+    <p>Я представил планету, где небо другого цвета, а на горизонте — силуэты неизвестных существ. Это не научный факт, а моё воображение.</p>
+
+    <!-- ВИДЕО ОТ НЕЙРОСЕТИ: видео/видео.mp4 -->
+    <h2>Видео: момент контакта</h2>
+    <p>Это короткое видео я сгенерировал с помощью нейросети. В нём показано, как может выглядеть первая встреча человека и внеземного существа.</p>
+
+    <video controls>
+      <source src="media/video.mp4" type="video/mp4">
+      Твой браузер не поддерживает видео.
+    </video>
+
+    <!-- Аудио-блок скрыт: файла звука нет в папке «звук». Чтобы вернуть, положите файл в media/zvuk.mp3 и раскомментируйте:
+    <h2>Аудио: звуки чужой планеты</h2>
+    <p>Этот звук тоже создан нейросетью. Я представил, какие сигналы могла бы издавать другая цивилизация.</p>
+    <audio controls><source src="media/zvuk.mp3" type="audio/mpeg"></audio>
+    -->
+
+    <p><em>Важно: всё в этом разделе — фантазия. Настоящих доказательств внеземной жизни у учёных пока нет.</em></p>
+
+  </div>
+
+
+  <!-- ============================================================
+       БЛОК 11: КНОПКА
+       ============================================================ -->
+  <button class="fade-in">Узнать больше о космосе</button>
+
+</div>
+</body>
+</html>
